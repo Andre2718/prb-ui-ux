@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Dokter Spesialis</title>
+    <link rel="icon" href="logobpjs.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- HEADER (FIXED) -->
+    <div class="bg-blue-800 text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+        <div class="font-semibold text-lg">
+            👨‍⚕️ Dashboard Dokter Spesialis — PRB TSM
+        </div>
+        <button onclick="openLogout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 text-white">
+            Logout
+        </button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="max-w-6xl mx-auto p-8 pt-24">
+
+        <h1 class="text-2xl font-bold text-gray-800">Dashboard Dokter Spesialis</h1>
+        <p class="text-gray-500 mb-6">Kelola pengajuan PRB, verifikasi data peserta, buat resep, dan proses rujukan</p>
+
+        <!-- TAB MENU -->
+        <div class="flex gap-3 mb-6">
+            <button onclick="showTab('pengajuan',this)"
+                class="tabBtn bg-white border px-4 py-2 rounded-lg shadow-sm transition hover:scale-105">
+                📄 Pengajuan PRB
+            </button>
+            <button onclick="showTab('resep',this)"
+                class="tabBtn bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition hover:scale-105">
+                💊 Manajemen Resep
+            </button>
+            <button onclick="showTab('cetak',this)"
+                class="tabBtn bg-white border px-4 py-2 rounded-lg shadow-sm transition hover:scale-105">
+                🧾 Cetak Dokumen
+            </button>
+        </div>
+
+        <!-- PENGAJUAN -->
+        <div id="pengajuan" class="hidden bg-white rounded-xl shadow p-6 transition-all">
+            <h2 class="font-semibold mb-4">📄 Data Pengajuan PRB</h2>
+
+            <!-- 🔥 FIX: text-center -->
+            <table class="w-full text-sm border text-center">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-2 border text-center">Nama</th>
+                        <th class="p-2 border text-center">No BPJS</th>
+                        <th class="p-2 border text-center">Diagnosa</th>
+                        <th class="p-2 border text-center w-60">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="listPengajuan"></tbody>
+            </table>
+        </div>
+
+        <!-- POPUP LOGOUT -->
+        <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <div class="bg-white rounded-xl shadow-lg w-80 p-6 text-center">
+                <div class="text-4xl mb-3">⚠️</div>
+                <h2 class="text-lg font-semibold mb-2">Konfirmasi Logout</h2>
+                <p class="text-gray-500 mb-6">Apakah Anda yakin ingin keluar?</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="closeLogout()" class="bg-gray-200 px-4 py-2 rounded-lg">Batal</button>
+                    <button onclick="confirmLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPUP REJECT -->
+        <div id="popupReject" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-6 w-[400px] shadow-lg">
+                <h2 class="text-lg font-semibold mb-4">Alasan Rujukan</h2>
+                <label class="text-sm font-medium">Indikasi Medis</label>
+                <select id="indikasi" class="w-full border rounded-lg p-3 mt-1 mb-4">
+                    <option value="">-- Pilih Indikasi --</option>
+                    <option>Tidak memenuhi kriteria PRB</option>
+                    <option>Kondisi pasien tidak stabil</option>
+                    <option>Perlu evaluasi lanjutan</option>
+                    <option>Komplikasi penyakit</option>
+                </select>
+                <label class="text-sm font-medium">Alasan Rujuk</label>
+                <select id="alasan" class="w-full border rounded-lg p-3 mt-1 mb-4">
+                    <option value="">-- Pilih Alasan --</option>
+                    <option>Perlu penyesuaian terapi</option>
+                    <option>Perlu pemeriksaan lanjutan</option>
+                    <option>Tidak memenuhi syarat PRB</option>
+                </select>
+                <label class="text-sm font-medium">Catatan Tambahan (Opsional)</label>
+                <textarea id="catatan" class="w-full border rounded-lg p-3 mt-1"></textarea>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeReject()" class="bg-gray-200 px-4 py-2 rounded-lg">Batal</button>
+                    <button onclick="submitReject()" class="bg-red-500 text-white px-4 py-2 rounded-lg">Kirim</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPUP LIHAT -->
+        <div id="popupLihat" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-6 w-[600px] shadow-lg">
+
+                <h2 class="font-semibold mb-4">Detail Pasien</h2>
+
+                <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                    <p><b>Nama:</b> <span id="d_nama"></span></p>
+                    <p><b>No. Kartu BPJS:</b> <span id="d_bpjs"></span></p>
+                    <p><b>Jenis Kelamin:</b> <span id="d_jk"></span></p>
+                    <p><b>Tanggal Lahir:</b> <span id="d_tgl"></span></p>
+                    <p><b>No Telepon:</b> <span id="d_telp"></span></p>
+                    <p><b>Diagnosa:</b> <span id="d_diagnosa"></span></p>
+                    <p><b>Keluhan:</b> <span id="d_keluhan"></span></p>
+                    <p><b>Anamnesa:</b> <span id="d_anamnesa"></span></p>
+                    <p><b>Terapi:</b> <span id="d_terapi"></span></p>
+                </div>
+
+                <h3 class="font-semibold mt-3 mb-2">🧪 Pemeriksaan Penunjang</h3>
+
+                <div class="grid grid-cols-3 gap-2 text-sm">
+                    <p>Tensi: <span id="d_tensi"></span></p>
+                    <p>GDP: <span id="d_gdp"></span></p>
+                    <p>GDPP: <span id="d_gdpp"></span></p>
+                    <p>HbA1C: <span id="d_hba1c"></span></p>
+                    <p>Microalbuminuria: <span id="d_micro"></span></p>
+                    <p>LDL: <span id="d_ldl"></span></p>
+                    <p>HDL: <span id="d_hdl"></span></p>
+                    <p>Trigliserida: <span id="d_trigliserida"></span></p>
+                    <p>Kreatinin: <span id="d_kreatinin"></span></p>
+                    <p>Ureum: <span id="d_ureum"></span></p>
+                </div>
+
+                <div class="flex justify-end mt-4">
+                    <button onclick="closeLihat()" class="bg-gray-300 px-4 py-2 rounded">Tutup</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MANAJEMEN RESEP -->
+        <div id="resep" class="bg-white rounded-xl shadow p-6 transition-all">
+            <h2 class="font-semibold mb-4">💊 Manajemen Resep PRB</h2>
+            <p class="text-gray-500 mb-6">
+                Resep otomatis tersedia setelah Anda menyetujui pengajuan PRB dari tab Pengajuan.
+            </p>
+
+            <!-- FORM -->
+            <div class="mt-6 border-t pt-6">
+                <h3 class="font-semibold mb-4">🧾 Input Surat Rujuk Balik</h3>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="nama" placeholder="Nama Peserta" class="border p-2 rounded">
+                    <input id="bpjs" placeholder="No Kartu BPJS" class="border p-2 rounded">
+                    <input id="tgl" placeholder="Tanggal Lahir" class="border p-2 rounded">
+                    <input id="diagnosaInput" placeholder="Diagnosa" class="border p-2 rounded">
+                    <input id="program" placeholder="Program PRB" class="border p-2 rounded">
+                    <input id="program" placeholder="Keterangan" class="border p-2 rounded">
+                </div>
+
+                <div class="mt-4">
+                    <textarea id="ResepInput" placeholder="Resep" class="w-full border p-2 rounded"></textarea>
+                </div>
+
+                <div class="mt-4">
+                    <textarea id="saranInput" placeholder="Saran" class="w-full border p-2 rounded"></textarea>
+                </div>
+
+                <button onclick="simpanSurat()" class="mt-4 bg-blue-700 text-white px-4 py-2 rounded">
+                    💾 Simpan Data Surat
+                </button>
+            </div>
+        </div>
+
+        <!-- CETAK -->
+        <div id="cetak" class="hidden bg-white rounded-xl shadow p-6">
+            <h2 class="font-semibold mb-4">🧾 Cetak Dokumen</h2>
+            <div class="flex gap-3">
+                <button onclick="printResep()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                    🖨 Cetak Resep
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let statusPasien = "";
+        let selectedIndex = null;
+
+        function showTab(tab, btn) {
+            document.getElementById("pengajuan").classList.add("hidden");
+            document.getElementById("resep").classList.add("hidden");
+            document.getElementById("cetak").classList.add("hidden");
+
+            document.getElementById(tab).classList.remove("hidden");
+
+            document.querySelectorAll(".tabBtn").forEach(el => {
+                el.classList.remove("bg-blue-700", "text-white");
+                el.classList.add("bg-white");
+            });
+
+            btn.classList.remove("bg-white");
+            btn.classList.add("bg-blue-700", "text-white");
+
+            // 🔥 AUTO ISI FORM SAAT MASUK TAB RESEP
+            if (tab === "resep") {
+                isiFormResepOtomatis();
+            }
+        }
+
+        function approveData(i) {
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+
+            data[i].status = "approved";
+
+            // 🔥 SIMPAN KE DATA APPROVED (AUTO MASUK RESEP)
+            let approved = JSON.parse(localStorage.getItem("dataApproved")) || [];
+
+            approved.push(data[i]); // kalau mau 1 pasien aja, ganti jadi: approved = [data[i]]
+
+            localStorage.setItem("dataApproved", JSON.stringify(approved));
+            localStorage.setItem("dataPengajuan", JSON.stringify(data));
+
+            showNotif("Pasien disetujui & masuk ke manajemen resep");
+
+            loadPengajuanDokter();
+        }
+
+        function openReject(i) {
+            selectedIndex = i;
+            document.getElementById("popupReject").classList.remove("hidden");
+        }
+
+        function closeReject() {
+            document.getElementById("popupReject").classList.add("hidden");
+        }
+
+        function submitReject() {
+
+            let indikasi = document.getElementById("indikasi").value;
+            let alasan = document.getElementById("alasan").value;
+            let catatan = document.getElementById("catatan").value;
+
+            if (indikasi === "" || alasan === "") {
+                showNotif("Pilih indikasi & alasan dulu!");
+                return;
+            }
+
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+
+            if (selectedIndex !== null) {
+
+                data[selectedIndex].status = "rejected";
+                data[selectedIndex].indikasi = indikasi;
+                data[selectedIndex].alasan = alasan;
+                data[selectedIndex].catatan = catatan;
+            }
+
+            localStorage.setItem("dataPengajuan", JSON.stringify(data));
+
+            showNotif("Pengajuan ditolak");
+
+            closeReject();
+            loadPengajuanDokter();
+        }
+
+        function printResep() {
+
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+
+            let adaApprove = data.some(p => p.status === "approved");
+
+            if (!adaApprove) {
+                showNotif("Belum ada pasien disetujui!");
+                return;
+            }
+
+            window.location.href = "surat_rujukan.html";
+        }
+
+        function openLogout() {
+            document.getElementById("logoutModal").classList.remove("hidden");
+        }
+
+        function closeLogout() {
+            document.getElementById("logoutModal").classList.add("hidden");
+        }
+
+        function confirmLogout() {
+            window.location.href = "login.html";
+        }
+
+        function simpanSurat() {
+            let surat = {
+                nama: document.getElementById("nama").value,
+                bpjs: document.getElementById("bpjs").value,
+                tgl: document.getElementById("tgl").value,
+                diagnosa: document.getElementById("diagnosaInput").value,
+                program: document.getElementById("program").value,
+                saran: document.getElementById("saranInput").value
+            };
+
+            localStorage.setItem("suratRujukan", JSON.stringify(surat));
+
+            showNotif("Data surat berhasil disimpan!");
+        }
+
+        // 🔥 AUTO ISI FORM RESEP DARI DATA APPROVED
+        function isiFormResepOtomatis() {
+
+            let approved = JSON.parse(localStorage.getItem("dataApproved")) || [];
+
+            if (approved.length === 0) return;
+
+            let p = approved[approved.length - 1]; // ambil terakhir
+
+            document.getElementById("nama").value = p.nama || "";
+            document.getElementById("bpjs").value = p.bpjs || "";
+            document.getElementById("tgl").value = p.tgl || "";
+            document.getElementById("diagnosaInput").value = p.diagnosa || "";
+        }
+
+        function showNotif(pesan) {
+            let notif = document.createElement("div");
+
+            notif.innerHTML = `
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div class="bg-white p-6 rounded-xl shadow text-center w-80">
+        <div class="text-3xl mb-2">ℹ️</div>
+        <p class="mb-4">${pesan}</p>
+        <button onclick="this.closest('.fixed').remove()" 
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg">OK</button>
+    </div>
+</div>
+`;
+
+            document.body.appendChild(notif);
+        }
+
+        function loadPengajuanDokter() {
+
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let tbody = document.getElementById("listPengajuan");
+
+            tbody.innerHTML = "";
+
+            data.forEach((p, i) => {
+
+                if (!p.nama || !p.bpjs || !p.diagnosa) return;
+
+                let statusColor = "";
+                let statusText = "";
+
+                if (p.status === "approved") {
+                    statusColor = "bg-green-100 text-green-700";
+                    statusText = "Approved";
+                } else if (p.status === "rejected") {
+                    statusColor = "bg-red-100 text-red-700";
+                    statusText = "Rejected";
+                } else {
+                    statusColor = "bg-yellow-100 text-yellow-700";
+                    statusText = "Pending";
+                }
+
+                tbody.innerHTML += `
+<tr>
+    <td class="border p-2 text-center">${p.nama}</td>
+    <td class="border p-2 text-center">${p.bpjs}</td>
+    <td class="border p-2 text-center">${p.diagnosa}</td>
+
+    <td class="border p-2 w-60">
+        <div class="flex flex-col items-center gap-1">
+
+            <span class="${statusColor} px-2 py-1 rounded text-xs">
+                ${statusText}
+            </span>
+
+            <div class="flex justify-center gap-2">
+                <button onclick="approveData(${i})"
+                class="bg-green-600 text-white px-2 py-1 rounded">Approve</button>
+
+                <button onclick="openReject(${i})"
+                class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+
+                <button onclick="lihat(${i})"
+                class="bg-gray-500 text-white px-2 py-1 rounded">👁</button>
+            </div>
+
+        </div>
+    </td>
+</tr>
+`;
+            });
+        }
+
+        function lihat(i) {
+
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let p = data[i];
+
+            document.getElementById("d_nama").innerText = p.nama || "-";
+            document.getElementById("d_bpjs").innerText = p.bpjs || "-";
+            document.getElementById("d_jk").innerText = p.jk || "-";
+            document.getElementById("d_tgl").innerText = p.tgl || "-";
+            document.getElementById("d_telp").innerText = p.telp || "-";
+            document.getElementById("d_diagnosa").innerText = p.diagnosa || "-";
+
+            document.getElementById("d_keluhan").innerText = p.keluhan || "-";
+            document.getElementById("d_anamnesa").innerText = p.anamnesa || "-";
+            document.getElementById("d_terapi").innerText = p.terapi || "-";
+
+            document.getElementById("d_tensi").innerText = p.tensi || "-";
+            document.getElementById("d_gdp").innerText = p.gdp || "-";
+            document.getElementById("d_gdpp").innerText = p.gdpp || "-";
+            document.getElementById("d_hba1c").innerText = p.hba1c || "-";
+            document.getElementById("d_micro").innerText = p.micro || "-";
+            document.getElementById("d_ldl").innerText = p.ldl || "-";
+            document.getElementById("d_hdl").innerText = p.hdl || "-";
+            document.getElementById("d_trigliserida").innerText = p.trigliserida || "-";
+            document.getElementById("d_kreatinin").innerText = p.kreatinin || "-";
+            document.getElementById("d_ureum").innerText = p.ureum || "-";
+
+            document.getElementById("popupLihat").classList.remove("hidden");
+        }
+
+        function closeLihat() {
+            document.getElementById("popupLihat").classList.add("hidden");
+        }
+
+        loadPengajuanDokter();
+
+        window.onload = () => {
+            loadPengajuanDokter();
+
+            let btn = document.querySelectorAll(".tabBtn")[0];
+            showTab('pengajuan', btn);
+        };
+    </script>
+
+</body>
+
+</html>

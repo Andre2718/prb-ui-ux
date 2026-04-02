@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Surat Rujuk Balik</title>
+    <link rel="icon" href="logobpjs.png">
+
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .table {
+            margin-top: 10px;
+        }
+
+        .table td {
+            padding: 3px 5px;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: right;
+        }
+
+        .btn {
+            margin-bottom: 15px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .print {
+            background: green;
+            color: white;
+        }
+
+        .download {
+            background: blue;
+            color: white;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- BUTTON -->
+        <div class="no-print">
+            <button class="btn print" onclick="window.print()">🖨 Print</button>
+        </div>
+
+        <!-- HEADER -->
+        <div class="header">
+
+            <div>
+                <b>BPJS Kesehatan</b><br>
+                <small>Badan Penyelenggara Jaminan Sosial</small>
+            </div>
+
+            <div class="right">
+                No SRB &nbsp;&nbsp;&nbsp;&nbsp;: <span id="nosrb"></span><br>
+                Tanggal &nbsp;: <span id="tgl"></span>
+            </div>
+
+        </div>
+
+        <div class="title">
+            SURAT RUJUK BALIK
+        </div>
+
+        <br>
+
+        <table class="table">
+            <tr>
+                <td width="140">Kepada Yth</td>
+                <td>: dr. Yanti Sukmayanningsih</td>
+            </tr>
+        </table>
+
+        <br>
+
+        <p>Mohon pemeriksaan dan penanganan lebih lanjut:</p>
+
+        <table class="table">
+            <tr>
+                <td width="140">Nama Peserta</td>
+                <td>: <span id="nama"></span></td>
+            </tr>
+            <tr>
+                <td>No. Kartu</td>
+                <td>: <span id="bpjs"></span></td>
+            </tr>
+            <tr>
+                <td>Tanggal Lahir</td>
+                <td>: <span id="lahir"></span></td>
+            </tr>
+            <tr>
+                <td>Diagnosa</td>
+                <td>: <span id="diagnosa"></span></td>
+            </tr>
+            <tr>
+                <td>Program PRB</td>
+                <td>: HT</td>
+            </tr>
+            <tr>
+                <td>Keterangan</td>
+                <td>: Konsultasi dokter</td>
+            </tr>
+            <tr>
+                <td>Saran</td>
+                <td>: Kembali ke FKTP</td>
+            </tr>
+            <tr>
+                <td>Resep</td>
+                <td>: </td>
+            </tr>
+        </table>
+
+        <br>
+
+        <p>Demikian atas bantuannya, diucapkan banyak terima kasih.</p>
+
+        <div class="footer">
+            Mengetahui,<br><br><br>
+            <b>dr. Dani Farid, Sp.PD</b>
+        </div>
+
+    </div>
+
+    <script>
+
+        // ambil data dari localStorage
+        let data = JSON.parse(localStorage.getItem("suratRujukan")) || {};
+
+        // AUTO ISI
+        document.getElementById("nama").innerText = data.nama || "Budi Santoso";
+        document.getElementById("bpjs").innerText = data.bpjs || "00012345678";
+        document.getElementById("diagnosa").innerText = data.diagnosa || "HT";
+        document.getElementById("lahir").innerText = "13 Oktober 1954";
+
+        // nomor surat random
+        document.getElementById("nosrb").innerText = Math.floor(Math.random() * 1000000000);
+
+        // tanggal hari ini
+        let today = new Date();
+        let tgl = today.toLocaleDateString("id-ID", {
+            day: "numeric", month: "long", year: "numeric"
+        });
+        document.getElementById("tgl").innerText = tgl;
+
+    </script>
+
+</body>
+
+</html>

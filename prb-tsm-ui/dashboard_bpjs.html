@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin BPJS</title>
+    <link rel="icon" href="logobpjs.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- HEADER (FIXED) -->
+
+    <div class="bg-blue-900 text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+
+        <div class="font-semibold text-lg">
+            🏢 Dashboard Admin BPJS — PRB TSM
+        </div>
+
+        <button onclick="openLogout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 text-white">
+            Logout
+        </button>
+
+    </div>
+
+    <!-- POPUP LOGOUT -->
+
+    <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+
+        <div class="bg-white rounded-xl shadow-lg w-80 p-6 text-center">
+
+            <div class="text-4xl mb-3">⚠️</div>
+
+            <h2 class="text-lg font-semibold mb-2">
+                Konfirmasi Logout
+            </h2>
+
+            <p class="text-gray-500 mb-6">
+                Apakah Anda yakin ingin keluar?
+            </p>
+
+            <div class="flex justify-center gap-3">
+
+                <button onclick="closeLogout()" class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">
+                    Batal
+                </button>
+
+                <button onclick="confirmLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CONTENT -->
+
+    <div class="max-w-7xl mx-auto p-8 pt-24">
+
+        <h1 class="text-2xl font-bold text-gray-800">
+            Dashboard Monitoring PRB
+        </h1>
+
+        <p class="text-gray-500 mb-6">
+            Monitoring capaian peserta PRB per wilayah dan per bulan
+        </p>
+
+        <!-- 🔥 TAB -->
+        <div class="flex gap-3 mb-6">
+            <button onclick="showTab('monitoring',this)"
+                class="tabBtn bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm transition hover:scale-105">
+                📊 Monitoring
+            </button>
+
+            <button onclick="showTab('user',this)"
+                class="tabBtn bg-white border px-4 py-2 rounded-lg shadow-sm transition hover:scale-105">
+                👤 Manajemen User
+            </button>
+
+            <button onclick="showTab('fktp',this)"
+                class="tabBtn bg-white border px-4 py-2 rounded-lg shadow-sm transition hover:scale-105">
+                🏥 Data FKTP
+            </button>
+
+        </div>
+
+        <!-- 🔥 MONITORING -->
+        <div id="monitoring">
+
+            <!-- STAT CARD -->
+            <div class="grid grid-cols-5 gap-6 mb-8">
+
+                <div class="bg-white p-5 rounded-xl shadow">
+                    <p class="text-gray-500 text-sm">Total Peserta PRB</p>
+                    <h2 id="totalPRB" class="text-2xl font-bold text-green-600">0</h2>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow">
+                    <p class="text-gray-500 text-sm">PRB Bulan Ini</p>
+                    <h2 id="prbBulan" class="text-2xl font-bold text-blue-600">0</h2>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow">
+                    <p class="text-gray-500 text-sm">FKTP Aktif</p>
+                    <h2 id="totalFktp" class="text-2xl font-bold text-purple-600">0</h2>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow">
+                    <p class="text-gray-500 text-sm">Dokter Spesialis</p>
+                    <h2 id="totalDokter" class="text-2xl font-bold text-red-500">0</h2>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow">
+                    <p class="text-gray-500 text-sm">Capaian PRB</p>
+                    <h2 id="persenPRB" class="text-2xl font-bold text-orange-500">0%</h2>
+
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div id="progressPRB" class="bg-orange-500 h-2 rounded-full" style="width:0%"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TAB WILAYAH -->
+            <div class="flex gap-3 mb-4">
+                <button onclick="showWilayah('kota',this)"
+                    class="wilayahBtn bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    Kota Tasikmalaya
+                </button>
+
+                <button onclick="showWilayah('kab_tasik',this)" class="wilayahBtn bg-white border px-4 py-2 rounded-lg">
+                    Kab. Tasikmalaya
+                </button>
+
+                <button onclick="showWilayah('garut',this)" class="wilayahBtn bg-white border px-4 py-2 rounded-lg">
+                    Kab. Garut
+                </button>
+            </div>
+
+            <!-- GRAFIK -->
+            <div class="bg-white rounded-xl shadow p-6 mb-8">
+                <h2 class="font-semibold mb-4">Grafik Capaian PRB per Wilayah</h2>
+                <canvas id="grafikPRB"></canvas>
+            </div>
+
+            <!-- TABEL -->
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="font-semibold mb-4">Daftar Peserta PRB</h2>
+
+                <table class="w-full text-sm border">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2 border">No</th>
+                            <th class="p-2 border">Nama Peserta</th>
+                            <th class="p-2 border">Nomor Hp</th>
+                            <th class="p-2 border">No BPJS</th>
+                            <th class="p-2 border">Diagnosa</th>
+                            <th class="p-2 border">FKTP</th>
+                            <th class="p-2 border">Wilayah</th>
+                            <th class="p-2 border">Tanggal Di Setujui</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablePRB"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- 🔥 USER (SUDAH DIPISAH) -->
+        <div id="user" class="hidden">
+
+            <div class="bg-white rounded-xl shadow p-6 mt-6">
+
+                <h2 class="font-semibold mb-4">👤 Manajemen User</h2>
+
+                <div class="flex gap-3 mb-4">
+                    <button onclick="openUserModal()" class="bg-blue-600 text-white px-4 py-2 rounded">
+                        + Tambah User
+                    </button>
+                </div>
+
+                <table class="w-full text-sm border">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2 border">Username</th>
+                            <th class="p-2 border">Role</th>
+                            <th class="p-2 border">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableUser"></tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div id="fktp" class="hidden">
+
+            <div class="bg-white rounded-xl shadow p-6 mt-6">
+
+                <h2 class="font-semibold mb-4">🏥 Daftar FKTP</h2>
+
+                <div class="flex gap-3 mb-4">
+                    <button onclick="filterFktp('all', this)"
+                        class="fktpBtn bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Semua
+                    </button>
+
+                    <button onclick="filterFktp('kota', this)"
+                        class="fktpBtn bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Kota Tasik
+                    </button>
+
+                    <button onclick="filterFktp('kab_tasik', this)"
+                        class="fktpBtn bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Kab Tasik
+                    </button>
+
+                    <button onclick="filterFktp('kab_garut', this)"
+                        class="fktpBtn bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        Garut
+                    </button>
+                </div>
+
+                <table class="w-full text-sm border">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2 border">No</th>
+                            <th class="p-2 border">Nama FKTP</th>
+                            <th class="p-2 border">Username</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableFktp"></tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- MODAL USER -->
+        <div id="userModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
+            <div class="bg-white p-6 rounded-xl w-96 shadow">
+
+                <h2 class="text-lg font-semibold mb-4">Tambah / Edit User</h2>
+
+                <input id="u_username" type="text" placeholder="Username" class="w-full border p-2 mb-3 rounded">
+
+                <input id="u_password" type="password" placeholder="Password" class="w-full border p-2 mb-3 rounded">
+
+                <select id="u_role" class="w-full border p-2 mb-4 rounded">
+                    <option value="admin">Admin</option>
+                    <option value="fktp">FKTP</option>
+                    <option value="dokter">Dokter Spesialis</option>
+                </select>
+
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeUserModal()" class="px-4 py-2 bg-gray-300 rounded">
+                        Batal
+                    </button>
+
+                    <button onclick="saveUser()" class="px-4 py-2 bg-blue-600 text-white rounded">
+                        Simpan
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 🔥 SCRIPT DIPINDAH KE LUAR -->
+    <script>
+
+        function showTab(tab, btn) {
+
+            // 🔥 sembunyiin semua tab dulu
+            document.getElementById("monitoring").classList.add("hidden");
+            document.getElementById("user").classList.add("hidden");
+
+            // 🔥 TAMBAHAN (biar fktp juga ke-handle)
+            let fktp = document.getElementById("fktp");
+            if (fktp) fktp.classList.add("hidden");
+
+            // 🔥 tampilkan tab yang dipilih
+            document.getElementById(tab).classList.remove("hidden");
+
+            // 🔥 reset warna tombol
+            document.querySelectorAll(".tabBtn").forEach(el => {
+                el.classList.remove("bg-blue-600", "text-white");
+                el.classList.add("bg-white", "border");
+            });
+
+            // 🔥 aktifkan tombol yang diklik
+            btn.classList.remove("bg-white", "border");
+            btn.classList.add("bg-blue-600", "text-white");
+
+            // 🔥 auto load data sesuai tab
+            if (tab === "user") {
+                loadUsers();
+            }
+
+            if (tab === "fktp") {
+                if (typeof loadFktp === "function") {
+                    loadFktp();
+                }
+            }
+        }
+
+        let chart;
+
+        function loadDashboard() {
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let approved = data.filter(p => p.status === "approved");
+
+            document.getElementById("totalPRB").innerText = approved.length;
+            document.getElementById("prbBulan").innerText = approved.length;
+
+            let fktpSet = new Set();
+            approved.forEach(p => fktpSet.add(p.fktp));
+            document.getElementById("totalFktp").innerText = fktpSet.size;
+            document.getElementById("totalDokter").innerText = fktpSet.size;
+        }
+
+        function showWilayah(wilayah, btn) {
+            document.querySelectorAll(".wilayahBtn").forEach(el => {
+                el.classList.remove("bg-blue-600", "text-white");
+                el.classList.add("bg-white", "border");
+            });
+
+            // 🔥 INI YANG KURANG
+            btn.classList.remove("bg-white", "border");
+            btn.classList.add("bg-blue-600", "text-white");
+
+            loadChart(wilayah);
+            loadTable(wilayah);
+        }
+
+        function loadChart(wilayah) {
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let filtered = data.filter(p => p.status === "approved" && p.wilayah === wilayah);
+
+            if (chart) chart.destroy();
+
+            chart = new Chart(document.getElementById('grafikPRB'), {
+                type: 'line',
+                data: {
+                    labels: ['Jumlah PRB'],
+                    datasets: [{
+                        label: wilayah,
+                        data: [filtered.length],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        fill: true,
+                        tension: 0.4, // 🔥 biar melengkung halus
+                        pointRadius: 5,
+                        pointBackgroundColor: '#2563eb'
+                    }]
+                }
+            });
+        }
+
+        function loadTable(wilayah) {
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let filtered = data.filter(p => p.status === "approved" && p.wilayah === wilayah);
+
+            let tbody = document.getElementById("tablePRB");
+            tbody.innerHTML = "";
+
+            filtered.forEach((p, i) => {
+                tbody.innerHTML += `
+                <tr>
+                    <td class="border p-2 text-center">${i + 1}</td>
+                    <td class="border p-2">${p.nama}</td>
+                    <td class="border p-2">${p.telp || "-"}</td>
+                    <td class="border p-2">${p.bpjs}</td>
+                    <td class="border p-2">${p.diagnosa}</td>
+                    <td class="border p-2">${p.fktp}</td>
+                    <td class="border p-2">${p.wilayah}</td>
+                    <td class="border p-2">${new Date().toISOString().slice(0, 10)}</td>
+                </tr>`;
+            });
+        }
+
+        function openLogout() {
+            document.getElementById("logoutModal").classList.remove("hidden")
+        }
+
+        function closeLogout() {
+            document.getElementById("logoutModal").classList.add("hidden")
+        }
+
+        function confirmLogout() {
+            window.location.href = "login.html"
+        }
+
+        window.onload = () => {
+            loadDashboard();
+            loadUsers();
+
+            let tab = document.querySelectorAll(".tabBtn")[0];
+            showTab("monitoring", tab);
+
+            let btn = document.querySelectorAll(".wilayahBtn")[0];
+            showWilayah("kota", btn);
+        };
+
+        let editIndex = null;
+
+        function loadUsers() {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            let tbody = document.getElementById("tableUser");
+
+            tbody.innerHTML = "";
+
+            users.forEach((u, i) => {
+                tbody.innerHTML += `
+                <tr>
+                    <td class="border p-2">${u.username}</td>
+                    <td class="border p-2">${u.role}</td>
+                    <td class="border p-2 text-center">
+                        <button onclick="openUserModal(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                        <button onclick="deleteUser(${i})" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function openUserModal(i = null) {
+
+            editIndex = i;
+
+            document.getElementById("userModal").classList.remove("hidden");
+
+            if (i !== null) {
+                let users = JSON.parse(localStorage.getItem("users")) || [];
+                let u = users[i];
+
+                document.getElementById("u_username").value = u.username;
+                document.getElementById("u_password").value = u.password;
+                document.getElementById("u_role").value = u.role;
+            } else {
+                document.getElementById("u_username").value = "";
+                document.getElementById("u_password").value = "";
+                document.getElementById("u_role").value = "admin";
+            }
+        }
+
+        function closeUserModal() {
+            document.getElementById("userModal").classList.add("hidden");
+        }
+
+        function saveUser() {
+
+            let username = document.getElementById("u_username").value;
+            let password = document.getElementById("u_password").value;
+            let role = document.getElementById("u_role").value;
+
+            if (!username || !password) {
+                alert("Isi semua dulu bro!");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+
+            if (editIndex !== null) {
+                users[editIndex] = { username, password, role };
+            } else {
+                users.push({ username, password, role });
+            }
+
+            localStorage.setItem("users", JSON.stringify(users));
+
+            closeUserModal();
+            loadUsers();
+        }
+
+        function deleteUser(i) {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+
+            if (confirm("Yakin hapus user?")) {
+                users.splice(i, 1);
+                localStorage.setItem("users", JSON.stringify(users));
+                loadUsers();
+            }
+        }
+
+        function loadFktp(wilayah = "all") {
+
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+
+            let approved = data.filter(p => p.status === "approved");
+
+            // 🔥 FILTER WILAYAH
+            if (wilayah !== "all") {
+                approved = approved.filter(p => p.wilayah === wilayah);
+            }
+
+            let map = {};
+
+            approved.forEach(p => {
+                let f = p.fktp || "Tidak diketahui";
+                map[f] = (map[f] || 0) + 1;
+            });
+
+            let tbody = document.getElementById("tableFKTP");
+            tbody.innerHTML = "";
+
+            let sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
+
+            sorted.forEach((item, i) => {
+                let [fktp, jumlah] = item;
+
+                tbody.innerHTML += `
+        <tr>
+            <td class="border p-2 text-center">${i + 1}</td>
+            <td class="border p-2">${fktp}</td>
+            <td class="border p-2 text-center">${jumlah}</td>
+        </tr>`;
+            });
+
+            // 🔥 TOP FKTP
+            if (sorted.length > 0) {
+                document.getElementById("topFktp").innerText =
+                    sorted[0][0] + " (" + sorted[0][1] + ")";
+            }
+        }
+
+        function filterFktp(wilayah, btn) {
+
+            document.querySelectorAll(".fktpBtn").forEach(el => {
+                el.classList.remove("bg-blue-600", "text-white");
+                el.classList.add("bg-white", "border");
+            });
+
+            btn.classList.remove("bg-white", "border");
+            btn.classList.add("bg-blue-600", "text-white");
+
+            loadFktp(wilayah);
+        }
+
+    </script>
+
+</body>
+
+</html>

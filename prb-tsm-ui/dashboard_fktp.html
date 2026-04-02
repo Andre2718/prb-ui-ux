@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard FKTP</title>
+    <link rel="icon" href="logobpjs.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- NAVBAR -->
+    <div class="bg-green-700 text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+
+        <div class="font-semibold text-lg">
+            🏥 Dashboard FKTP — PRB TSM
+        </div>
+
+        <!-- 🔥 INI YANG KURANG -->
+        <button onclick="openLogout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 text-white">
+            Logout
+        </button>
+
+        <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+
+            <div class="bg-white rounded-xl shadow-lg w-80 p-6 text-center">
+
+                <div class="text-4xl mb-3">⚠️</div>
+
+                <h2 class="text-lg font-semibold mb-2">Konfirmasi Logout</h2>
+
+                <p class="text-gray-500 mb-6">
+                    Apakah Anda yakin ingin keluar?
+                </p>
+
+                <div class="flex justify-center gap-3">
+
+                    <button onclick="closeLogout()" class="bg-gray-200 px-4 py-2 rounded-lg">
+                        Batal
+                    </button>
+
+                    <button onclick="confirmLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg">
+                        Logout
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="max-w-6xl mx-auto p-8 pt-24">
+
+        <h1 class="text-2xl font-bold mb-2">Dashboard User FKTP</h1>
+        <p class="text-gray-500 mb-6">
+            Input dan kelola data peserta PRB
+        </p>
+
+        <!-- TAB -->
+        <div class="flex gap-3 mb-6">
+
+            <button onclick="showTab('input',this)"
+                class="tabBtn bg-green-600 text-white px-4 py-2 rounded-lg shadow transition hover:scale-105">
+                📄 Input Data Peserta
+            </button>
+
+            <button onclick="showTab('status',this)"
+                class="tabBtn bg-white border px-4 py-2 rounded-lg transition hover:scale-105">
+                📋 Status Pengajuan
+            </button>
+
+            <button onclick="showTab('cetak',this)"
+                class="tabBtn bg-white border px-4 py-2 rounded-lg transition hover:scale-105">
+                🧾 Cetak Resep
+            </button>
+
+        </div>
+
+        <!-- ================= INPUT ================= -->
+        <div id="input" class="bg-white p-8 rounded-xl shadow">
+
+            <h2 class="font-semibold mb-4">📄 Form Input Data Peserta PRB</h2>
+
+            <hr class="mb-6">
+
+            <!-- ================= IDENTITAS ================= -->
+            <h3 class="text-green-700 font-semibold mb-2">DATA IDENTITAS PESERTA</h3>
+            <hr class="mb-4">
+
+            <div class="grid grid-cols-2 gap-6 mb-6">
+
+                <div>
+                    <label class="text-sm font-medium">Nama Lengkap *</label>
+                    <input id="nama" placeholder="Nama lengkap..." class="w-full border p-3 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium">No. Kartu BPJS *</label>
+                    <input id="bpjs" placeholder="0000-0000-0000" class="w-full border p-3 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium">Jenis Kelamin *</label>
+                    <select id="jk" class="w-full border p-3 rounded mt-1">
+                        <option value="">-- Pilih --</option>
+                        <option>Laki-laki</option>
+                        <option>Perempuan</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium">Tanggal Lahir *</label>
+                    <input id="tgl" placeholder="Tanggal Lahir" class="w-full border p-3 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium">No Telepon *</label>
+                    <input id="telp" placeholder="No Telepon" class="w-full border p-3 rounded mt-1">
+                </div>
+
+            </div>
+
+            <div class="mb-6">
+                <label class="text-sm font-medium">Diagnosa *</label>
+                <select id="diagnosa" class="w-full border p-3 rounded mt-1">
+                    <option value="">-- Pilih Diagnosa --</option>
+                    <option>Hipertensi</option>
+                    <option>Diabetes Mellitus</option>
+                </select>
+            </div>
+
+            <!-- ================= KLINIS ================= -->
+            <h3 class="text-green-700 font-semibold mb-2">DATA KLINIS</h3>
+            <hr class="mb-4">
+
+            <div class="mb-4">
+                <label class="text-sm font-medium">Keluhan Utama *</label>
+                <textarea id="keluhan" class="w-full border p-3 rounded mt-1"
+                    placeholder="Tuliskan keluhan pasien..."></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="text-sm font-medium">Anamnesa</label>
+                <textarea id="anamnesa" class="w-full border p-3 rounded mt-1"
+                    placeholder="Riwayat penyakit..."></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label class="text-sm font-medium">Terapi yang Diberikan</label>
+                <textarea id="terapi" class="w-full border p-3 rounded mt-1"
+                    placeholder="Nama obat, dosis..."></textarea>
+            </div>
+
+            <!-- ================= PENUNJANG ================= -->
+            <h3 class="text-green-700 font-semibold mb-2">PEMERIKSAAN PENUNJANG</h3>
+            <hr class="mb-4">
+
+            <div class="grid grid-cols-3 gap-4 mb-6 text-sm">
+
+                <div>
+                    <label class="text-gray-600">Tensi (mmHg)</label>
+                    <input id="tensi" value="120/80" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">GDP (mg/dL)</label>
+                    <input id="gdp" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">GDPP (mg/dL)</label>
+                    <input id="gdpp" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">HbA1C (%)</label>
+                    <input id="hba1c" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">Microalbuminuria</label>
+                    <input id="micro" placeholder="Positif/Negatif" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">Kolesterol LDL (mg/dL)</label>
+                    <input id="ldl" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">Kolesterol HDL (mg/dL)</label>
+                    <input id="hdl" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">Kolesterol Trigliserida</label>
+                    <input id="trigliserida" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">Kreatinin (mg/dL)</label>
+                    <input id="kreatinin" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+                <div>
+                    <label class="text-gray-600">Ureum (mg/dL)</label>
+                    <input id="ureum" value="0" class="w-full border p-2 rounded mt-1">
+                </div>
+
+            </div>
+
+            <div class="flex justify-end gap-3">
+
+                <button class="bg-gray-200 px-5 py-2 rounded">
+                    Reset
+                </button>
+
+                <button onclick="openKirim()" class="bg-green-600 text-white px-6 py-2 rounded">
+                    🩺 Kirim ke Dr. Spesialis →
+                </button>
+
+            </div>
+
+            <div id="popupKirim" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+
+                <div class="bg-white p-6 rounded-xl w-[400px] shadow-lg">
+
+                    <h2 class="font-semibold mb-4">Pilih Dokter Spesialis</h2>
+
+                    <label class="text-sm">Wilayah</label>
+                    <select id="wilayah" onchange="pilihDokter()" class="w-full border p-2 mb-4">
+                        <option value="">-- Pilih Wilayah --</option>
+                        <option value="kota">Kota Tasikmalaya</option>
+                        <option value="kab_tasik">Kabupaten Tasikmalaya</option>
+                        <option value="garut">Kabupaten Garut</option>
+                    </select>
+
+                    <label class="text-sm">Dokter</label>
+                    <select id="dokter" class="w-full border p-2 mb-6">
+                        <option value="">-- Pilih Dokter --</option>
+                    </select>
+
+                    <div class="flex justify-end gap-2">
+                        <button onclick="closeKirim()" class="bg-gray-200 px-4 py-2 rounded">
+                            Batal
+                        </button>
+
+                        <button onclick="kirimData()" class="bg-green-600 text-white px-4 py-2 rounded">
+                            Kirim
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= STATUS ================= -->
+        <div id="status" class="hidden bg-white p-8 rounded-xl shadow">
+
+            <h2 class="font-semibold mb-4">📋 Status Pengajuan</h2>
+
+            <table class="w-full border text-sm">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="border p-2">Nama</th>
+                        <th class="border p-2">No HP</th>
+                        <th class="border p-2">Diagnosa</th>
+                        <th class="border p-2">Dokter</th>
+                        <th class="border p-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="listPengajuan"></tbody>
+            </table>
+
+        </div>
+
+        <!-- ================= CETAK ================= -->
+        <div id="cetak" class="hidden bg-white p-8 rounded-xl shadow">
+
+            <h2 class="font-semibold mb-4">🧾 Cetak</h2>
+
+            <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded">
+                Cetak
+            </button>
+
+        </div>
+
+        <!-- 🔥 TAMBAHIN INI (TARO DI BAWAH DIV CETAK / SEBELUM <script>) -->
+        <div id="popupAlasan" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+            <div class="bg-white p-6 rounded-xl w-[400px] shadow-lg">
+
+                <h2 class="font-semibold mb-4">Alasan Penolakan</h2>
+
+                <p><b>Indikasi:</b> <span id="a_indikasi"></span></p>
+                <p><b>Alasan:</b> <span id="a_alasan"></span></p>
+                <p><b>Catatan:</b> <span id="a_catatan"></span></p>
+
+                <div class="flex justify-end mt-4">
+                    <button onclick="closeAlasan()" class="bg-gray-300 px-4 py-2 rounded">
+                        Tutup
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        function openKirim() {
+            document.getElementById("popupKirim").classList.remove("hidden");
+        }
+
+        function closeKirim() {
+            document.getElementById("popupKirim").classList.add("hidden");
+        }
+
+        function pilihDokter() {
+
+            let wilayah = document.getElementById("wilayah").value;
+            let dokter = document.getElementById("dokter");
+
+            dokter.innerHTML = '<option value="">-- Pilih Dokter --</option>';
+
+            if (wilayah === "kota") {
+                dokter.innerHTML += `
+        <option>dr. Andre Sp.PD</option>
+        <option>dr. Rina Sp.PD</option>
+        <option>dr. Budi Sp.JP</option>
+        <option>dr. Sinta Sp.P</option>
+        <option>dr. Dedi Sp.KFR</option>
+        <option>dr. Yuni Sp.GK</option>
+        <option>dr. Rudi Sp.S</option>
+        <option>dr. Tika Sp.M</option>
+        <option>dr. Andi Sp.PD</option>
+        <option>dr. Wawan Sp.JP</option>
+        `;
+            }
+
+            if (wilayah === "kab_tasik") {
+                dokter.innerHTML += `
+        <option>dr. Suhen Sp.PD</option>
+        <option>dr. Lina Sp.JP</option>
+        <option>dr. Agus Sp.P</option>
+        <option>dr. Rina Sp.KFR</option>
+        <option>dr. Dani Sp.GK</option>
+        <option>dr. Yanto Sp.S</option>
+        <option>dr. Wati Sp.M</option>
+        <option>dr. Sari Sp.PD</option>
+        <option>dr. Dika Sp.JP</option>
+        <option>dr. Riko Sp.P</option>
+        `;
+            }
+
+            if (wilayah === "garut") {
+                dokter.innerHTML += `
+        <option>dr. Iki Sp.PD</option>
+        <option>dr. Rina Sp.JP</option>
+        <option>dr. Deni Sp.P</option>
+        <option>dr. Santi Sp.KFR</option>
+        <option>dr. Yudi Sp.GK</option>
+        <option>dr. Asep Sp.S</option>
+        <option>dr. Tini Sp.M</option>
+        <option>dr. Roni Sp.PD</option>
+        <option>dr. Wawan Sp.JP</option>
+        <option>dr. Lala Sp.P</option>
+        `;
+            }
+        }
+
+        function openLogout() {
+            document.getElementById("logoutModal").classList.remove("hidden");
+        }
+
+        function closeLogout() {
+            document.getElementById("logoutModal").classList.add("hidden");
+        }
+
+        function confirmLogout() {
+            window.location.href = "login.html";
+        }
+
+        function showTab(tab, btn) {
+
+            document.getElementById("input").classList.add("hidden");
+            document.getElementById("status").classList.add("hidden");
+            document.getElementById("cetak").classList.add("hidden");
+
+            document.getElementById(tab).classList.remove("hidden");
+
+            document.querySelectorAll(".tabBtn").forEach(el => {
+                el.classList.remove("bg-green-600", "text-white", "shadow");
+                el.classList.add("bg-white", "border");
+            });
+
+            btn.classList.remove("bg-white", "border");
+            btn.classList.add("bg-green-600", "text-white", "shadow");
+        }
+
+        function kirimData() {
+
+            let wilayah = document.getElementById("wilayah").value;
+            let dokter = document.getElementById("dokter").value;
+
+            if (!wilayah || !dokter) {
+                alert("Pilih wilayah & dokter dulu!");
+                return;
+            }
+
+            let data = {
+                nama: document.getElementById("nama").value,
+                bpjs: document.getElementById("bpjs").value,
+                telp: document.getElementById("telp").value,
+                diagnosa: document.getElementById("diagnosa").value,
+                dokter: dokter,
+                wilayah: wilayah,
+                status: "pending",
+
+                // 🔥 TAMBAHAN WAJIB
+                jk: document.getElementById("jk").value,
+                tgl: document.getElementById("tgl").value,
+
+                keluhan: document.getElementById("keluhan").value,
+                anamnesa: document.getElementById("anamnesa").value,
+                terapi: document.getElementById("terapi").value,
+
+                tensi: document.getElementById("tensi").value,
+                gdp: document.getElementById("gdp").value,
+                gdpp: document.getElementById("gdpp").value,
+                hba1c: document.getElementById("hba1c").value,
+                micro: document.getElementById("micro").value,
+                ldl: document.getElementById("ldl").value,
+                hdl: document.getElementById("hdl").value,
+                trigliserida: document.getElementById("trigliserida").value,
+                kreatinin: document.getElementById("kreatinin").value,
+                ureum: document.getElementById("ureum").value
+            };
+
+            let semua = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            semua.push(data);
+
+            localStorage.setItem("dataPengajuan", JSON.stringify(semua));
+
+            alert("Berhasil dikirim ke " + dokter);
+
+            closeKirim();
+            loadPengajuan();
+        }
+
+        function loadPengajuan() {
+
+            let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let tbody = document.getElementById("listPengajuan");
+
+            tbody.innerHTML = "";
+
+            data.forEach(p => {
+
+                let warna = "";
+                let statusText = "";
+
+                if (p.status === "approved") {
+                    warna = "bg-green-100 text-green-700";
+                    statusText = "Disetujui";
+                } else if (p.status === "rejected") {
+                    warna = "bg-red-100 text-red-700";
+                    statusText = "Ditolak";
+                } else {
+                    warna = "bg-yellow-100 text-yellow-700";
+                    statusText = "Menunggu";
+                }
+
+                if (!p.nama || !p.bpjs || !p.diagnosa) return;
+
+                tbody.innerHTML += `
+<tr>
+    <td class="border p-2">${p.nama}</td>
+    <td class="border p-2">${p.telp || '_'}</td>
+    <td class="border p-2">${p.diagnosa}</td>
+    <td class="border p-2">${p.dokter}</td>
+
+    <td class="border p-2 text-center">
+        <span class="${warna} px-2 py-1 rounded">
+            ${statusText}
+        </span>
+
+        ${p.status === "rejected" ? `
+            <button onclick='lihatAlasan(${JSON.stringify(p)})'
+            class="ml-2 text-blue-600 hover:underline">
+                👁
+            </button>
+        ` : ""}
+    </td>
+</tr>
+`;
+            });
+        }
+
+        function lihatAlasan(p) {
+            document.getElementById("a_indikasi").innerText = p.indikasi || "-";
+            document.getElementById("a_alasan").innerText = p.alasan || "-";
+            document.getElementById("a_catatan").innerText = p.catatan || "-";
+
+            document.getElementById("popupAlasan").classList.remove("hidden");
+        }
+
+        function closeAlasan() {
+            document.getElementById("popupAlasan").classList.add("hidden");
+        }
+
+        loadPengajuan();
+
+    </script>
+
+</body>
+
+</html>

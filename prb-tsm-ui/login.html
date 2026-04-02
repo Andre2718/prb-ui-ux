@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login PRB TSM</title>
+    <link rel="icon" href="logobpjs.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white rounded-2xl shadow-lg p-10 w-[450px]">
+
+        <div class="flex items-center gap-4 mb-6">
+
+            <div class="bg-green-100 p-3 rounded-xl">
+                <div class="w-8 h-8 bg-green-600 rounded"></div>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-bold text-blue-700">BPJS Kesehatan</h2>
+                <p class="text-sm text-gray-500">Aplikasi PRB TSM</p>
+            </div>
+
+        </div>
+
+        <h2 class="text-2xl font-bold text-center mb-1">
+            Masuk ke Aplikasi
+        </h2>
+
+        <p class="text-center text-gray-500 text-sm mb-6">
+            Program Rujuk Balik – Tatalaksana Spesialis Mandiri
+        </p>
+
+        <div class="grid grid-cols-3 gap-3 mb-6">
+
+            <div onclick="pilihRole('fktp',this)"
+                class="role border-2 border-green-500 bg-green-50 rounded-xl p-4 text-center cursor-pointer transition hover:scale-105">
+
+                🏥
+
+                <p class="font-semibold text-sm">User FKTP</p>
+                <p class="text-xs text-gray-500">Faskes Tingkat Pertama</p>
+
+            </div>
+
+            <div onclick="pilihRole('dokter',this)"
+                class="role border rounded-xl p-4 text-center cursor-pointer transition hover:scale-105">
+
+                👨‍⚕️
+
+                <p class="font-semibold text-sm">Dr Spesialis</p>
+                <p class="text-xs text-gray-500">Dokter RSU</p>
+
+            </div>
+
+            <div onclick="pilihRole('bpjs',this)"
+                class="role border rounded-xl p-4 text-center cursor-pointer transition hover:scale-105">
+
+                🏢
+
+                <p class="font-semibold text-sm">Admin BPJS</p>
+                <p class="text-xs text-gray-500">Monitoring</p>
+
+            </div>
+
+        </div>
+
+        <input type="hidden" id="role" value="fktp">
+
+        <label class="text-sm font-medium">Username</label>
+
+        <input id="username" type="text" placeholder="Masukkan username..."
+            class="w-full border rounded-lg p-3 mt-1 mb-4 focus:ring-2 focus:ring-green-500 outline-none">
+
+        <label class="text-sm font-medium">Password</label>
+
+        <input id="password" type="password" placeholder="Masukkan password..."
+            class="w-full border rounded-lg p-3 mt-1 mb-6 focus:ring-2 focus:ring-green-500 outline-none">
+
+        <button onclick="login()"
+            class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+            Masuk → </button>
+
+        <p class="text-center text-sm text-gray-500 mt-4">
+            Belum punya akun?
+            <a href="register.html" class="text-green-600 font-semibold hover:underline">
+                Register
+            </a>
+        </p>
+
+        <p class="text-center text-xs text-gray-400 mt-4">
+            © 2025 BPJS Kesehatan · Sistem PRB TSM
+        </p>
+
+    </div>
+
+    <!-- POPUP ERROR -->
+
+    <div id="popupError" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+
+        <div class="bg-white rounded-xl p-8 w-[350px] text-center shadow-lg">
+
+            <div class="flex justify-center mb-4">
+
+                <div class="w-16 h-16 border-4 border-red-400 rounded-full flex items-center justify-center">
+                    <span class="text-red-500 text-3xl">✖</span>
+                </div>
+
+            </div>
+
+            <p class="text-gray-700 mb-6">
+                Login gagal! Username / Password salah atau Role tidak sesuai
+            </p>
+
+            <button onclick="tutupPopup()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+                OK </button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function pilihRole(role, element) {
+
+            document.getElementById("role").value = role;
+
+            document.querySelectorAll(".role").forEach(function (el) {
+
+                el.classList.remove("border-green-500", "bg-green-50", "border-2");
+
+            });
+
+            element.classList.add("border-green-500", "bg-green-50", "border-2");
+
+        }
+
+        function login() {
+
+            let user = document.getElementById("username").value;
+            let pass = document.getElementById("password").value;
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+
+            let found = users.find(u => u.username === user && u.password === pass);
+
+            if (found) {
+
+                if (found.role === "admin") {
+                    window.location.href = "dashboard_bpjs.html";
+                }
+                else if (found.role === "fktp") {
+                    window.location.href = "dashboard_fktp.html";
+                }
+                else if (found.role === "dokter") {
+                    window.location.href = "dashboard_dokter.html";
+                }
+
+            } else {
+                alert("Login gagal!");
+            }
+        }
+
+        function tutupPopup() {
+
+            document.getElementById("popupError").classList.add("hidden");
+
+        }
+
+    </script>
+
+</body>
+
+</html>
