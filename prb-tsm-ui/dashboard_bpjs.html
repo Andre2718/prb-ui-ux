@@ -223,7 +223,7 @@
                         Kab Tasik
                     </button>
 
-                    <button onclick="filterFktp('kab_garut', this)"
+                    <button onclick="filterFktp('garut', this)"
                         class="fktpBtn bg-blue-600 text-white px-4 py-2 rounded-lg">
                         Garut
                     </button>
@@ -235,6 +235,7 @@
                             <th class="p-2 border">No</th>
                             <th class="p-2 border">Nama FKTP</th>
                             <th class="p-2 border">Username</th>
+                            <th class="p-2 border">Jumlah</th>
                         </tr>
                     </thead>
                     <tbody id="tableFktp"></tbody>
@@ -313,6 +314,10 @@
                     loadFktp();
                 }
             }
+
+            if (tab === "fktp") {
+                loadFktp("all");
+            }
         }
 
         let chart;
@@ -383,7 +388,7 @@
                     <td class="border p-2">${p.telp || "-"}</td>
                     <td class="border p-2">${p.bpjs}</td>
                     <td class="border p-2">${p.diagnosa}</td>
-                    <td class="border p-2">${p.fktp}</td>
+                    <td class="border p-2">${p.fktp || "-"}</td>
                     <td class="border p-2">${p.wilayah}</td>
                     <td class="border p-2">${new Date().toISOString().slice(0, 10)}</td>
                 </tr>`;
@@ -499,7 +504,6 @@
 
             let approved = data.filter(p => p.status === "approved");
 
-            // 🔥 FILTER WILAYAH
             if (wilayah !== "all") {
                 approved = approved.filter(p => p.wilayah === wilayah);
             }
@@ -507,30 +511,43 @@
             let map = {};
 
             approved.forEach(p => {
-                let f = p.fktp || "Tidak diketahui";
-                map[f] = (map[f] || 0) + 1;
+
+                let key = p.fktp || "Tidak diketahui";
+
+                // 🔥 kalau belum ada, buat object
+                if (!map[key]) {
+                    map[key] = {
+                        jumlah: 0,
+                        namaUser: p.namaFktp || "-"
+                    };
+                }
+
+                map[key].jumlah++;
             });
 
-            let tbody = document.getElementById("tableFKTP");
+            let tbody = document.getElementById("tableFktp");
             tbody.innerHTML = "";
 
-            let sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
+            let sorted = Object.entries(map)
+                .sort((a, b) => b[1].jumlah - a[1].jumlah);
 
             sorted.forEach((item, i) => {
-                let [fktp, jumlah] = item;
+
+                let fktp = item[0];
+                let dataFktp = item[1];
 
                 tbody.innerHTML += `
         <tr>
             <td class="border p-2 text-center">${i + 1}</td>
             <td class="border p-2">${fktp}</td>
-            <td class="border p-2 text-center">${jumlah}</td>
+            <td class="border p-2 text-center">${dataFktp.namaUser}</td>
+            <td class="border p-2 text-center">${dataFktp.jumlah}</td>
         </tr>`;
             });
 
-            // 🔥 TOP FKTP
             if (sorted.length > 0) {
                 document.getElementById("topFktp").innerText =
-                    sorted[0][0] + " (" + sorted[0][1] + ")";
+                    sorted[0][0] + " (" + sorted[0][1].jumlah + ")";
             }
         }
 
