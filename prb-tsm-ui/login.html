@@ -68,21 +68,23 @@
 
         </div>
 
-        <input type="hidden" id="role" value="fktp">
+        <form onsubmit="login(event)">
+            <input type="hidden" id="role" value="fktp">
 
-        <label class="text-sm font-medium">Username</label>
+            <label class="text-sm font-medium">Username</label>
 
-        <input id="username" type="text" placeholder="Masukkan username..."
-            class="w-full border rounded-lg p-3 mt-1 mb-4 focus:ring-2 focus:ring-green-500 outline-none">
+            <input id="username" type="text" placeholder="Masukkan username..."
+                class="w-full border rounded-lg p-3 mt-1 mb-4 focus:ring-2 focus:ring-green-500 outline-none">
 
-        <label class="text-sm font-medium">Password</label>
+            <label class="text-sm font-medium">Password</label>
 
-        <input id="password" type="password" placeholder="Masukkan password..."
-            class="w-full border rounded-lg p-3 mt-1 mb-6 focus:ring-2 focus:ring-green-500 outline-none">
+            <input id="password" type="password" placeholder="Masukkan password..."
+                class="w-full border rounded-lg p-3 mt-1 mb-6 focus:ring-2 focus:ring-green-500 outline-none">
 
-        <button onclick="login()"
-            class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
-            Masuk → </button>
+            <button type="submit"
+                class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+                Masuk → </button>
+        </form>
 
         <p class="text-center text-sm text-gray-500 mt-4">
             Belum punya akun?
@@ -138,7 +140,9 @@
 
         }
 
-        function login() {
+        function login(e) {
+
+            if (e) e.preventDefault(); // 🔥 penting
 
             let user = document.getElementById("username").value;
             let pass = document.getElementById("password").value;
@@ -149,6 +153,8 @@
 
             if (found) {
 
+                localStorage.setItem("userLogin", JSON.stringify(found)); // 🔥 WAJIB
+
                 if (found.role === "admin") {
                     window.location.href = "dashboard_bpjs.html";
                 }
@@ -158,9 +164,6 @@
                 else if (found.role === "dokter") {
                     window.location.href = "dashboard_dokter.html";
                 }
-
-            } else {
-                alert("Login gagal!");
             }
         }
 
@@ -169,6 +172,12 @@
             document.getElementById("popupError").classList.add("hidden");
 
         }
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                login();
+            }
+        });
 
     </script>
 
