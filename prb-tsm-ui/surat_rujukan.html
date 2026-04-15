@@ -6,7 +6,6 @@
     <title>Surat Rujuk Balik</title>
     <link rel="icon" href="logobpjs.png">
 
-
     <style>
         body {
             font-family: Arial;
@@ -22,7 +21,7 @@
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .title {
@@ -62,11 +61,6 @@
             color: white;
         }
 
-        .download {
-            background: blue;
-            color: white;
-        }
-
         @media print {
             .no-print {
                 display: none;
@@ -92,35 +86,35 @@
         <!-- HEADER -->
         <div class="header">
 
-            <div>
-                <b>BPJS Kesehatan</b><br>
-                <small>Badan Penyelenggara Jaminan Sosial</small>
+            <!-- LOGO -->
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img src="logo-bpjskesehatan.png" style="height:100px;">
             </div>
 
+            <!-- NOMOR -->
             <div class="right">
-                No SRB &nbsp;&nbsp;&nbsp;&nbsp;: <span id="nosrb"></span><br>
-                Tanggal &nbsp;: <span id="tgl"></span>
+                <div>No SRB : <span id="nosrb"></span></div>
+                <div>Tanggal : <span id="tgl"></span></div>
             </div>
 
         </div>
 
+        <!-- JUDUL -->
         <div class="title">
             SURAT RUJUK BALIK
         </div>
 
-        <br>
-
+        <!-- KEPADA -->
         <table class="table">
             <tr>
                 <td width="140">Kepada Yth</td>
-                <td>: dr. Yanti Sukmayanningsih</td>
+                <td>: <span id="fktpTujuan"></span></td>
             </tr>
         </table>
 
-        <br>
-
         <p>Mohon pemeriksaan dan penanganan lebih lanjut:</p>
 
+        <!-- DATA PASIEN -->
         <table class="table">
             <tr>
                 <td width="140">Nama Peserta</td>
@@ -140,51 +134,70 @@
             </tr>
             <tr>
                 <td>Program PRB</td>
-                <td>: HT</td>
+                <td>: <span id="program"></span></td>
             </tr>
             <tr>
                 <td>Keterangan</td>
-                <td>: Konsultasi dokter</td>
+                <td>: <span id="keterangan"></span></td>
             </tr>
             <tr>
                 <td>Saran</td>
-                <td>: Kembali ke FKTP</td>
+                <td>: <span id="saran"></span></td>
             </tr>
             <tr>
                 <td>Resep</td>
-                <td>: </td>
+                <td>: <span id="resep"></span></td>
             </tr>
         </table>
 
-        <br>
+        <p style="margin-top:20px;">
+            Demikian atas bantuannya, diucapkan banyak terima kasih.
+        </p>
 
-        <p>Demikian atas bantuannya, diucapkan banyak terima kasih.</p>
-
+        <!-- TTD -->
         <div class="footer">
             Mengetahui,<br><br><br>
-            <b>dr. Dani Farid, Sp.PD</b>
+            <b id="dokter"></b>
         </div>
 
     </div>
 
     <script>
 
-        // ambil data dari localStorage
+        // ambil data
         let data = JSON.parse(localStorage.getItem("suratRujukan")) || {};
 
-        // AUTO ISI
-        document.getElementById("nama").innerText = data.nama || "Budi Santoso";
-        document.getElementById("bpjs").innerText = data.bpjs || "00012345678";
-        document.getElementById("diagnosa").innerText = data.diagnosa || "HT";
-        document.getElementById("lahir").innerText = "13 Oktober 1954";
+        // helper biar aman
+        function safe(val) {
+            return val && val !== "" ? val : "-";
+        }
 
-        // nomor surat random
-        document.getElementById("nosrb").innerText = Math.floor(Math.random() * 1000000000);
+        // isi data
+        document.getElementById("nama").innerText = safe(data.nama);
+        document.getElementById("bpjs").innerText = safe(data.bpjs);
+        document.getElementById("diagnosa").innerText = safe(data.diagnosa);
+        document.getElementById("lahir").innerText = safe(data.lahir);
+        document.getElementById("program").innerText = safe(data.program);
+        document.getElementById("keterangan").innerText = safe(data.keterangan);
+        document.getElementById("saran").innerText = safe(data.saran);
+        document.getElementById("resep").innerText = safe(data.resep);
 
-        // tanggal hari ini
+        // FKTP (kepada)
+        document.getElementById("fktpTujuan").innerText = safe(data.fktp);
+
+        // dokter
+        document.getElementById("dokter").innerText = safe(data.dokter);
+
+        // nomor SRB
+        document.getElementById("nosrb").innerText =
+            data.nosrb || "SRB-" + Date.now();
+
+        // tanggal
         let today = new Date();
         let tgl = today.toLocaleDateString("id-ID", {
-            day: "numeric", month: "long", year: "numeric"
+            day: "numeric",
+            month: "long",
+            year: "numeric"
         });
         document.getElementById("tgl").innerText = tgl;
 
