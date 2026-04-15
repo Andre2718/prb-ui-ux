@@ -72,11 +72,6 @@
                 📋 Status Pengajuan
             </button>
 
-            <button onclick="showTab('cetak',this)"
-                class="tabBtn bg-white border px-4 py-2 rounded-lg transition hover:scale-105">
-                🧾 Cetak Resep
-            </button>
-
         </div>
 
         <!-- ================= INPUT ================= -->
@@ -281,13 +276,6 @@
 
         <!-- ================= CETAK ================= -->
         <div id="cetak" class="hidden bg-white p-8 rounded-xl shadow">
-
-            <h2 class="font-semibold mb-4">🧾 Cetak</h2>
-
-            <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded">
-                Cetak
-            </button>
-
         </div>
 
         <!-- 🔥 TAMBAHIN INI (TARO DI BAWAH DIV CETAK / SEBELUM <script>) -->
@@ -413,6 +401,8 @@
                 return;
             }
 
+            let userLogin = JSON.parse(localStorage.getItem("userLogin")) || {};
+
             let data = {
                 nama: document.getElementById("nama").value,
                 bpjs: document.getElementById("bpjs").value,
@@ -422,14 +412,16 @@
                 wilayah: wilayah,
                 status: "pending",
 
-                // 🔥 TAMBAHAN WAJIB
+                // 🔥 INI KUNCI NYA
+                fktp: userLogin.username, // contoh: Puskesmas Tawang
+                namaFktp: userLogin.nama, // contoh: Andre Rizki Kurnia
+
+                // tambahan
                 jk: document.getElementById("jk").value,
                 tgl: document.getElementById("tgl").value,
-
                 keluhan: document.getElementById("keluhan").value,
                 anamnesa: document.getElementById("anamnesa").value,
                 terapi: document.getElementById("terapi").value,
-
                 tensi: document.getElementById("tensi").value,
                 gdp: document.getElementById("gdp").value,
                 gdpp: document.getElementById("gdpp").value,
@@ -515,6 +507,17 @@
         }
 
         loadPengajuan();
+
+        localStorage.setItem("loginUser", JSON.stringify(user));
+        data.push({
+            nama: nama,
+            telp: telp,
+            bpjs: bpjs,
+            diagnosa: diagnosa,
+            wilayah: wilayah,
+            fktp: userLogin.nama, // 🔥 INI PENYELAMAT HIDUP LU
+            status: "approved"
+        });
 
     </script>
 
