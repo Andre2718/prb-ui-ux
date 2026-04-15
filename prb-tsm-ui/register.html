@@ -7,7 +7,6 @@
     <title>Register PRB TSM</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -18,27 +17,29 @@
             Register Akun
         </h2>
 
+        <!-- NAMA -->
         <label class="text-sm font-medium">Nama Lengkap</label>
-
-        <input type="text" placeholder="Masukkan nama lengkap"
+        <input id="nama" type="text" placeholder="Masukkan nama lengkap"
             class="w-full border rounded-lg p-3 mt-1 mb-4 focus:ring-2 focus:ring-green-500 outline-none">
 
+        <!-- USERNAME -->
         <label class="text-sm font-medium">Username</label>
-
-        <input type="text" placeholder="Masukkan username"
+        <input id="username" type="text" placeholder="Masukkan username"
             class="w-full border rounded-lg p-3 mt-1 mb-4 focus:ring-2 focus:ring-green-500 outline-none">
 
+        <!-- PASSWORD -->
         <label class="text-sm font-medium">Password</label>
-
-        <input type="password" placeholder="Masukkan password"
+        <input id="password" type="password" placeholder="Masukkan password"
             class="w-full border rounded-lg p-3 mt-1 mb-4 focus:ring-2 focus:ring-green-500 outline-none">
 
+        <!-- CONFIRM -->
         <label class="text-sm font-medium">Konfirmasi Password</label>
-
-        <input type="password" placeholder="Ulangi password"
+        <input id="confirm" type="password" placeholder="Ulangi password"
             class="w-full border rounded-lg p-3 mt-1 mb-6 focus:ring-2 focus:ring-green-500 outline-none">
 
-        <button class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+        <!-- BUTTON -->
+        <button onclick="registerUser()"
+            class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
             Daftar
         </button>
 
@@ -50,6 +51,81 @@
         </p>
 
     </div>
+
+    <!-- 🔥 POPUP SUCCESS -->
+    <div id="successModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
+        <div class="bg-white rounded-xl shadow-lg w-80 p-6 text-center">
+
+            <div class="text-5xl mb-3">✅</div>
+
+            <h2 class="text-lg font-semibold mb-2">
+                Registrasi Berhasil!
+            </h2>
+
+            <p class="text-gray-500 mb-6">
+                Akun berhasil dibuat
+            </p>
+
+            <button onclick="goDashboard()"
+                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                Lanjut ke Dashboard
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- 🔥 SCRIPT -->
+    <script>
+
+        function registerUser() {
+
+            let nama = document.getElementById("nama").value;
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            let confirm = document.getElementById("confirm").value;
+
+            // VALIDASI
+            if (!nama || !username || !password || !confirm) {
+                alert("Isi semua dulu!");
+                return;
+            }
+
+            if (password !== confirm) {
+                alert("Password gak sama!");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+
+            // CEK DUPLIKAT
+            let exist = users.find(u => u.username === username);
+            if (exist) {
+                alert("Username sudah dipakai!");
+                return;
+            }
+
+            // SIMPAN USER
+            users.push({
+                username: username,
+                password: password,
+                role: "fktp",
+                nama: nama
+            });
+
+            localStorage.setItem("users", JSON.stringify(users));
+
+            // 🔥 TAMPILKAN POPUP
+            document.getElementById("successModal").classList.remove("hidden");
+        }
+
+        function goDashboard() {
+            window.location.href = "login.html";
+        }
+
+    </script>
 
 </body>
 
