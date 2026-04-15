@@ -158,7 +158,7 @@
                     <input id="tgl" placeholder="Tanggal Lahir" class="border p-2 rounded">
                     <input id="diagnosaInput" placeholder="Diagnosa" class="border p-2 rounded">
                     <input id="program" placeholder="Program PRB" class="border p-2 rounded">
-                    <input id="program" placeholder="Keterangan" class="border p-2 rounded">
+                    <input id="keterangan" placeholder="Keterangan" class="border p-2 rounded">
                 </div>
 
                 <div class="mt-4">
@@ -213,21 +213,22 @@
         }
 
         function approveData(i) {
+
             let data = JSON.parse(localStorage.getItem("dataPengajuan")) || [];
+            let userLogin = JSON.parse(localStorage.getItem("userLogin")) || {};
 
             data[i].status = "approved";
 
-            // 🔥 SIMPAN KE DATA APPROVED (AUTO MASUK RESEP)
-            let approved = JSON.parse(localStorage.getItem("dataApproved")) || [];
+            // 🔥 simpan dokter
+            data[i].dokterApprove = userLogin.username;
 
-            approved.push(data[i]); // kalau mau 1 pasien aja, ganti jadi: approved = [data[i]]
+            let approved = JSON.parse(localStorage.getItem("dataApproved")) || [];
+            approved.push(data[i]);
 
             localStorage.setItem("dataApproved", JSON.stringify(approved));
             localStorage.setItem("dataPengajuan", JSON.stringify(data));
 
             showNotif("Pasien disetujui & masuk ke manajemen resep");
-
-            loadPengajuanDokter();
         }
 
         function openReject(i) {
@@ -295,13 +296,27 @@
         }
 
         function simpanSurat() {
+
+            let approved = JSON.parse(localStorage.getItem("dataApproved")) || [];
+            let pasien = approved[approved.length - 1] || {};
+
             let surat = {
                 nama: document.getElementById("nama").value,
                 bpjs: document.getElementById("bpjs").value,
-                tgl: document.getElementById("tgl").value,
+                lahir: document.getElementById("tgl").value,
                 diagnosa: document.getElementById("diagnosaInput").value,
                 program: document.getElementById("program").value,
-                saran: document.getElementById("saranInput").value
+                keterangan: document.getElementById("keterangan").value,
+                saran: document.getElementById("saranInput").value,
+                resep: document.getElementById("ResepInput").value,
+
+                // 🔥 AMBIL DARI DATA PASIEN (INI KUNCI)
+                fktp: pasien.fktp || "-",
+
+                // 🔥 AMBIL DARI LOGIN DOKTER (INI BENAR)
+                dokter: JSON.parse(localStorage.getItem("userLogin"))?.username || "-",
+
+                nosrb: "SRB-" + Date.now()
             };
 
             localStorage.setItem("suratRujukan", JSON.stringify(surat));
@@ -322,6 +337,10 @@
             document.getElementById("bpjs").value = p.bpjs || "";
             document.getElementById("tgl").value = p.tgl || "";
             document.getElementById("diagnosaInput").value = p.diagnosa || "";
+            document.getElementById("program").value = p.program || "";
+            document.getElementById("keterangan").value = p.keterangan || "";
+            document.getElementById("ResepInput").value = p.resep || "";
+            document.getElementById("saranInput").value = p.saran || "";
         }
 
         function showNotif(pesan) {
